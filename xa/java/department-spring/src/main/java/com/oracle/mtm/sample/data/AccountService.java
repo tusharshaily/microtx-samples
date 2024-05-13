@@ -48,11 +48,6 @@ public class AccountService implements IAccountService {
     @Qualifier("microTxSqlConnection")
     @Lazy
     private Connection connection;
-
-    @Autowired
-    @Qualifier("ucpXADataSource")
-    XADataSource dataSource;
-
     /**
      * Get account details persisted in the database
      * @param accountId Account identity
@@ -62,12 +57,8 @@ public class AccountService implements IAccountService {
     @Override
     public Account accountDetails(String accountId) throws SQLException {
         Account account = null;
-        XAConnection xaConnection= null;
-        Connection connection = null;
         PreparedStatement statement = null;
         try {
-            xaConnection = dataSource.getXAConnection();
-            connection = xaConnection.getConnection();
             if (connection == null) {
                 return null;
             }
@@ -85,12 +76,6 @@ public class AccountService implements IAccountService {
         } finally {
             if(statement!=null){
                 statement.close();
-            }
-            if(connection != null){
-                connection.close();
-            }
-            if(xaConnection != null){
-                xaConnection.close();
             }
         }
         return account;
